@@ -1,0 +1,9 @@
+http://www.ru.nl/corpusngt/
+
+http://www.robots.ox.ac.uk/~vgg/data/pose/
+
+http://www.bslcorpusproject.org/cava/activities/
+
+http://www-i6.informatik.rwth-aachen.de/aslr/
+
+http://www-i6.informatik.rwth-aachen.de/~koller/1miohands-data/
