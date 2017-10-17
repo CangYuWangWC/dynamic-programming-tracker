@@ -13,57 +13,11 @@ from scipy.stats import multivariate_normal
 import skvideo.io
 import skvideo.datasets
 
+
+
 def jump_penalty_euclidean(p1,p2):
   d=p1-p2
   return np.sum(d**2)
-
-def skin_pixel_scorer(video):
-  T,h,w,c=video.shape
-  score=np.zeros((T,h,w))
-  mu_hsv=np.array([20.0,35.0,73.0])/255.0
-  mu_rgb=np.array([176,134,112])
-  cov=np.array([0.3,0.5,10])
-  mu=mu_hsv
-
-  for t in range(T):
-    # delta=video[t,:,:,:]
-    score[t,:,:]= multivariate_normal.pdf(video[t,:,:,:],mu,cov)
-    # if (t % 5==0):
-    #   plt.clf()
-    #   plt.imshow(score[t,:,:])
-    #   plt.colorbar()
-    #   plt.pause(0.1*1.0/60.0)
-  return score
-
-def euclidean_movement_score(video):
-  T,h,w,c=video.shape
-  score=np.zeros((T-1,h,w))
-  for t in range(T-1):
-    delta=np.square(video[t+1,:,:,:]-video[t,:,:,:])
-    score[t,:,:]= np.sqrt(np.sum(delta,axis=2))
-    # if (t % 5==0):
-    #   plt.clf()
-    #   plt.imshow(score[t,:,:])
-    #   plt.colorbar()
-    #   plt.pause(0.1*1.0/60.0)
-  return score
-
-def manhattan_movement_score(video):
-  T,h,w,c=video.shape
-  score=np.zeros((T-1,h,w))
-  structure = np.ones((2, 2))
-  for t in range(T-1):
-    delta=np.abs(video[t+1,:,:,:]-video[t,:,:,:])
-    delta= np.sum(delta,axis=2)
-    # delta= ndimage.gaussian_filter(delta, sigma=(3,3), order=0)
-    # delta=ndimage.binary_erosion(delta,structure=structure).astype(score.dtype)
-    score[t, :, :]=delta
-    # if (t % 3==0):
-    #   plt.clf()
-    #   plt.imshow(score[t,:,:])
-    #   plt.colorbar()
-    #   plt.pause(0.1*1.0/60.0)
-  return score
 
 class DPTracker:
   def __init__(self,neighbourhood_size):
