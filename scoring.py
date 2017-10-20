@@ -2,13 +2,9 @@ import numpy as np
 from scipy.stats import multivariate_normal
 from scipy import ndimage
 
-def skin_pixel_scorer(video):
+def skin_pixel_scorer(video,mu,cov):
   T,h,w,c=video.shape
   score=np.zeros((T,h,w))
-  mu_hsv=np.array([20.0,35.0,73.0])/255.0
-  mu_rgb=np.array([176,134,112])
-  cov=np.array([0.3,0.5,10])
-  mu=mu_hsv
 
   for t in range(T):
     score[t,:,:]= multivariate_normal.pdf(video[t,:,:,:],mu,cov)
