@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats import multivariate_normal
 from scipy import ndimage
+import pyflow
 
 def skin_pixel_scorer(video,mu,cov):
   T,h,w,c=video.shape
@@ -61,6 +62,34 @@ def manhattan_movement_score(video):
   print("Movement score treshold: %f" % threshold)
   score[score<threshold]=0
   score=ndimage.grey_erosion(score,(1, 20, 20))
+  score= ndimage.gaussian_filter(score, sigma=(0,3,3), order=0)
+  return score
+
+def optical_flow_movement_score(video):
+  T,h,w,c=video.shape
+  score=np.zeros((T,h,w))
+  #flow options
+  alpha = 0.012
+  ratio = 0.75
+  minWidth = 20
+  nOuterFPIterations = 5
+  nInnerFPIterations = 1
+  nSORIterations = 25
+  colType = 0  # 0 or default:RGB, 1:GRAY (but pass gray image with shape (h,w,1))
+
+  for t in range(1,T):
+    u, v, im2W = pyflow.coarse2fine_flow(
+        video[t-1,:,:,:], video[t,:,:,:], alpha, ratio, minWidth, nOuterFPIterations, nInnerFPIterations,
+        nSORIterations, colType)
+    score[t,:,:]=np.sqrt(u**2+v**2)
+
+
+  mean=score.mean()
+  std=score.std()
+  threshold = mean - 0.1*  std
+  print("Optical flow treshold: %f" % threshold)
+  score[score<threshold]=0
+  score= ndimage.grey_erosion(score,(1, 20, 20))
   score= ndimage.gaussian_filter(score, sigma=(0,3,3), order=0)
   return score
 
